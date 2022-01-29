@@ -2,44 +2,78 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
+import java.util.Random;
 
+public class Server {
 
-public class User {
-
-	public static void main(String[] args) throws UnknownHostException, IOException {
+public static void main(String[] args) throws IOException {
+		
+	ServerSocket listener=  new ServerSocket(9999);
+	System.out.println("Servidor iniciado!");	
 	
-		Scanner in = new Scanner(System.in);
-	
-		System.out.println("Introduzca ip");
-		String serverAdress = in.nextLine();
-
+		try {
 		while(true) {
+		
+			Socket socket = listener.accept();
 			
-			Scanner in2 = new Scanner(System.in);
+			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			int clientOption = 0;		
+			String inputString = input.readLine();
+			
+			if(isNumeric(inputString)) {
+				clientOption = Integer.parseInt(inputString);}
+			
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);	
+			
+			if (!isNumeric(inputString)) {
 				
-			System.out.println("\nEn qué año se inventó? \n1:El papel. \n2:El secador de pelo. \n3:El reloj digital. \n4:El código de barras. \n5:El horno de microondas.");
-			String option = in2.nextLine();
-
-			Socket socket = new Socket(serverAdress, 9999);
-			
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			out.println(option);
-			
-	  	BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			String answer = input.readLine();
-			
-			System.out.println(answer);
-			
+				out.println(clientOption + " Introduzca un opcion válida!");
 	
-			socket.close();
-	
-			
+			}else if(clientOption == 1) {
+				
+				out.println("El papel se inventó en el año 105 !\n");
+				
+			}else if(clientOption == 2) {
+				
+				out.println("El secador de pelo se inventó en el año 1.920 !\n");
+				
+			}else if(clientOption == 3) {
+				
+				out.println("El reloj digital se inventó en el año 1.971 !\n");
+				
+			}else if(clientOption == 4) {
+				
+				out.println("El código de barras se inventó en el año 1.974 !\n");
+				
+			}else if(clientOption == 5) {
+				
+				out.println("El horno de microondas se inventó en el año 1.943 !\n");
+				
+			}
+				
+			else {
+				out.println("Introduzca una opcion dentro del rango.");
+			}
+				
+		socket.close();
 		}
+			
+							
+	}finally {
+		listener.close();}
+	}
+	
+	
+	public static boolean isNumeric(String str) {
 		
-		
+		try {
+			
+			Integer.parseInt(str);
+		}catch(NumberFormatException e) {
+			return false;
+		}return true;
 	}
 
 }
